@@ -1,7 +1,7 @@
 from collections import defaultdict
 
-MAX_SIZE = 150
-AVG_SIZE = 100
+MAX_SIZE = 100
+AVG_SIZE = 50
 
 
 class Messages:
@@ -20,9 +20,12 @@ class Messages:
 
     def retrieve(self, chat_id):
         return "\n".join(
-            f"{author} ({user}): {message}"
+            f"{author} (@{user}): {message}"
             for author, user, message in self.chats[chat_id]
         )
+
+    def clear(self, chat_id):
+        self.chats[chat_id].clear()
 
     def normalize(self, author, user, message):
         return f"{author}({user}): {message}"

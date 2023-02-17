@@ -1,6 +1,6 @@
 import logging
 from telegram.ext import Application
-from telegram.error import InvalidToken
+from telegram.error import InvalidToken, TimedOut
 
 from sucinto.commands import HANDLERS
 from sucinto.config import TELEGRAM_API_KEY
@@ -24,7 +24,11 @@ def main():
         app.add_handler(handler)
 
     logging.info("Running.")
-    app.run_polling()
+    try:
+        app.run_polling()
+    except TimedOut as error:
+        logging.critical(error)
+
     logging.info("Exiting Server.")
 
 

@@ -1,4 +1,5 @@
 import openai
+import logging
 from telegram.ext import CommandHandler, MessageHandler, filters
 
 from sucinto.config import OPENAI_API_KEY
@@ -8,19 +9,24 @@ from sucinto.messages import Messages
 openai.api_key = OPENAI_API_KEY
 messages = Messages()
 
+
 async def start(update, context):
     await update.message.reply_text("Hello!")
+
 
 async def help(update, context):
     await update.message.reply_text("Help!")
 
+
 async def resume(update, context):
+    logging.info("Resuming a conversation")
+
     chat_id = update.effective_chat.id
     conversation = messages.retrieve(chat_id)
 
-    if conversation == '':
+    if conversation == "":
         await update.message.reply_text("Não consegui ler nenhuma conversa ainda.")
-        return 
+        return
 
     prompt = f"{conversation} \nOs usuários falaram sobre "
 
@@ -31,10 +37,13 @@ async def resume(update, context):
         max_tokens=500,
     )
 
-    text = "Os usuários falaram sobre " + request['choices'][0]['text']
+    text = "Os usuários falaram sobre " + request["choices"][0]["text"]
     await update.message.reply_text(text)
 
+
 async def store_message(update, context):
+    logging.info("Saving message")
+
     chat_id = update.effective_chat.id
     first_name = update.message.chat.first_name
     username = update.message.chat.username
@@ -43,8 +52,8 @@ async def store_message(update, context):
 
 
 HANDLERS = [
-    CommandHandler('start', start),
-    CommandHandler('help', help),
-    CommandHandler('resume', resume),
+    CommandHandler("start", start),
+    CommandHandler("help", help),
+    CommandHandler("resume", resume),
     MessageHandler(filters.TEXT & ~filters.COMMAND, store_message),
 ]
